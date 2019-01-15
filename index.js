@@ -30,6 +30,8 @@ if (process.env.NODE_ENV !== 'production') {
 // https://www.binance.com/restapipub.html
 // REPLACE xxx with your own API key key and secret.
 //
+console.log(process.env.API_KEY)
+console.log(process.env.API_KEY)
 const APIKEY = process.env.API_KEY
 const APISECRET = process.env.API_SECRET
 //////////////////////////////////////////////////////////////////////////////////
