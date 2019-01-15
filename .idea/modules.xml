@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/node-binance-trader.iml" filepath="$PROJECT_DIR$/.idea/node-binance-trader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Copam/tombo/.idea/tombo.iml" filepath="$PROJECT_DIR$/../../Copam/tombo/.idea/tombo.iml" />
     </modules>
   </component>
 </project>
