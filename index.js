@@ -22,12 +22,16 @@ const binance     = require('binance-api-node').default
 const inquirer    = require("inquirer")
 const setTitle    = require('node-bash-title')
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').load();
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // https://www.binance.com/restapipub.html
 // REPLACE xxx with your own API key key and secret.
 //
-const APIKEY = 'XXXX'
-const APISECRET = 'XXXX'
+const APIKEY = process.env.API_KEY
+const APISECRET = process.env.API_SECRET
 //////////////////////////////////////////////////////////////////////////////////
 
 let pnl = 0
