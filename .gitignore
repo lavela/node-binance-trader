@@ -2,6 +2,10 @@
 node_modules
 npm-debug.log
 
+# Ide
+/.idea
+/nbproject
+
 # Local development
 *.env
 *.dev
@@ -11,6 +15,3 @@ npm-debug.log
 
 track.js
 test.js
-
-# Ide
-/.idea
