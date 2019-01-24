@@ -72,7 +72,7 @@ let trailing_pourcent = conf.get('nbt.trailing_pourcent')?conf.get('nbt.trailing
 
 clear()
 
-console.log(chalk.yellow(figlet.textSync('_N_B_T_', { horizontalLayout: 'fitted' })))
+console.log(chalk.yellow(figlet.textSync('_B_T_', { horizontalLayout: 'fitted' })))
 console.log(' ')
 console.log(" 🐬 ".padEnd(10) + '                   ' + " 🐬 ".padStart(11))
 console.log(" 🐬 ".padEnd(10) + chalk.bold.underline.cyan('Node Binance Trader') + " 🐬 ".padStart(11))
@@ -169,7 +169,6 @@ var buy_sell_options = [
 ]
 
 ask_buy_sell_options = () => {
-  console.log(" ")
   inquirer.prompt(buy_sell_options).then(answers => {
     if (answers.buy_option.includes("Market")) {
       // MARKET PRICE BUY //
@@ -723,8 +722,66 @@ process.stdin.on('keypress', ( key ) => {
 })
 ////////////////////////////////////////////////////////////////////
 
+var options_menu = [
+  new inquirer.Separator(),
+  {
+    name: 'See your orders',
+    value: {
+      name: 'see_order',
+      method: () => {
+        console.log('not implement')
+      }
+    }
+  },
+  {
+    name: 'Create trade',
+    value: {
+      name: 'create_trade',
+      method: ask_pair_budget
+    }
+  },
+  {
+    name:'See info about your trades',
+    value: {
+      name: 'see_trades',
+      method: () => {
+        console.log('not implement')
+      }
+    }
+  },
+  {
+    name:'See info about a specific coin',
+    value: {
+      name: 'see_info_coin',
+      method: () => {
+        console.log('not implement')
+      }
+    }
+  },
+  new inquirer.Separator()
+]
+
+var menu_request = [
+  {
+    type: 'list',
+    name: 'menu_option',
+    message: chalk.cyan('What you would like to Do ?'),
+    choices: options_menu,
+  },
+]
+
+ask_menu = () => {
+  inquirer.prompt(menu_request).then(answers => {
+    for(var i = 0; i < options_menu.length; i++) {
+      if (options_menu[i].value  && (options_menu[i].value.name == answers.menu_option.name)) {
+        options_menu[i].value.method()
+      }
+    }
+  })
+}
+
 const run = async () => {
-  ask_pair_budget()
+  ask_menu()
 }
 
 run()
