@@ -72,47 +72,46 @@ let trailing_pourcent = conf.get('nbt.trailing_pourcent')?conf.get('nbt.trailing
 
 clear()
 
-console.log(chalk.yellow(figlet.textSync('_B_T_', { horizontalLayout: 'fitted' })))
+console.log(chalk.green(figlet.textSync('_H_P_', { horizontalLayout: 'fitted' })))
 console.log(' ')
 console.log(" 🐬 ".padEnd(10) + '                   ' + " 🐬 ".padStart(11))
-console.log(" 🐬 ".padEnd(10) + chalk.bold.underline.cyan('Node Binance Trader') + " 🐬 ".padStart(11))
+console.log(" 🐬 ".padEnd(10) + chalk.bold.underline.cyan('Hipnos - Binance Trader') + " 🐬 ".padStart(11))
 console.log(" 🐬 ".padEnd(10) + '                   ' + " 🐬 ".padStart(11))
 console.log(' ')
-console.log(chalk.yellow('  ⚠️  USE THIS APP AT YOUR OWN RISK ⚠️'))
 console.log(' ')
 
 var buy_info_request = [
   {
     type: 'input',
     name: 'base_currency',
-    message: chalk.cyan('What base currency would you use for the trade? (USDT, BTC, BNB or ETH)'),
+    message: chalk.cyan('Qual moeda base para o negociação? (USDT, BTC, BNB ou ETH)'),
     default: base_currency,
     validate: function(value) {
       var valid = ((value.toUpperCase()==='BTC')||(value.toUpperCase()==='USDT')||(value.toUpperCase()==='ETH')||(value.toUpperCase()==='BNB'))
-      return valid || 'Currency not valid, please chose between USDT, BTC, BNB, ETH'
+      return valid || 'Moeda não válida, por favor, escolha entre (USDT, BTC, BNB ou ETH)'
     },
   },
   {
     type: 'input',
     name: 'budget',
     default: budget,
-    message: chalk.cyan('What is your budget for this trade? (in base currency)(total value. > 15 USD.)'),
+    message: chalk.cyan('Qual seu orçamento para esta negociação? ('+base_currency+')'),
     validate: function(value) {
       var valid = !isNaN(parseFloat(value)) && (value>0)
-      return valid || 'Please enter a number superior than 0'
+      return valid || 'Por favor insira um número superior a 0'
     },
     filter: Number
   },
   {
     type: 'input',
     name: 'currency_to_buy',
-    message: chalk.cyan('What currency would you like to buy?'),
+    message: chalk.cyan('Qual moeda você gostaria de comprar?'),
     default: currency_to_buy,
   },
 ]
 
 
-const report = ora(chalk.grey('Starting the trade...'))
+const report = ora(chalk.grey('Iniciando a negociação...'))
 
 ask_pair_budget = () => {
   inquirer.prompt(buy_info_request).then(answers => {
@@ -140,13 +139,13 @@ ask_pair_budget = () => {
           ask_price = parseFloat(results.asks[0].price)
           console.log( chalk.grey(moment().format('h:mm:ss').padStart(8))
             + chalk.yellow(pair.padStart(10))
-            + chalk.grey(" CURRENT 1ST BID PRICE: " + bid_price ))
+            + chalk.grey(" Preço atual: " + bid_price ))
           fixed_buy_price_input[0].default = results.bids[0].price
           ask_buy_sell_options()
         })
       }
       else {
-        console.log(chalk.magenta("SORRY THE PAIR ") + chalk.green(pair) + chalk.magenta(" IS UNKNOWN BY BINANCE. Please try another one."))
+        console.log(chalk.magenta("Desculpe, ") + chalk.green(pair) + chalk.magenta(" não existe paridade dessa moeda no BINANCE. Por favor tente outra."))
         ask_pair_budget()
       }
     })
@@ -157,46 +156,48 @@ var buy_sell_options = [
   {
     type: 'list',
     name: 'buy_option',
-    message: chalk.cyan('How would you like to buy:'),
-    choices: ['Buy at Market Price', 'Set a Buy Order just above Bid Price', 'Set a Buy Order at a Fixed Buy Price'],
+    message: chalk.cyan('Como você gostaria de comprar: '),
+    choices: ['#1# - Preço de Mercado', '#2# - Configurar uma ordem de compra um pouco acima do preço atual de compra', '#3# - Configurar uma ordem com o valor de compra fixo'],
+    //choices: ['Buy at Market Price', 'Set a Buy Order just above Bid Price', 'Set a Buy Order at a Fixed Buy Price'],
   },
   {
     type: 'list',
     name: 'sell_option',
-    message: chalk.cyan('How would you like to sell:'),
-    choices: ['Set a Trailing Stop Loss', 'Set Stop Loss and Profit Percentages'],
+    message: chalk.cyan('Como você gostaria de vender: '),
+    choices: ['#4# - Configurar Stop Loss', '#5# - Configurar Stop Loss e Ganho Porcentagem'],
+    //choices: ['Set a Trailing Stop Loss', 'Set Stop Loss and Profit Percentages'],
   },
 ]
 
 ask_buy_sell_options = () => {
   inquirer.prompt(buy_sell_options).then(answers => {
-    if (answers.buy_option.includes("Market")) {
+    if (answers.buy_option.includes("#1#")) {
       // MARKET PRICE BUY //
-      buying_method = "Market"
-      if (answers.sell_option.includes("Trailing")) {
-        selling_method = "Trailing"
+      buying_method = "#1#"
+      if (answers.sell_option.includes("#4#")) {
+        selling_method = "#4#"
         ask_trailing_percent()
       }
       else {
-        selling_method = "Profit"
+        selling_method = "#5#"
         ask_loss_profit_percents()
       }
     }
-    if (answers.buy_option.includes("Bid")) {
+    if (answers.buy_option.includes("#2#")) {
       // BID PRICE BUY //
-      buying_method = "Bid"
-      if (answers.sell_option.includes("Trailing")) {
-        selling_method = "Trailing"
+      buying_method = "#2#"
+      if (answers.sell_option.includes("#4#")) {
+        selling_method = "#4#"
         ask_trailing_percent()
       }
       else {
-        selling_method = "Profit"
+        selling_method = "#5#"
         ask_loss_profit_percents()
       }
     }
-    if (answers.buy_option.includes("Fixed")) {
+    if (answers.buy_option.includes("#3#")) {
       // FIXED PRICE BUY //
-      buying_method = "Fixed"
+      buying_method = "#3#"
       ask_fixed_buy_price(answers.sell_option)
     }
   })
@@ -207,10 +208,10 @@ var fixed_buy_price_input = [
     type: 'input',
     name: 'fixed_buy_price',
     default: fixed_buy_price,
-    message: chalk.cyan('What is Fixed Buy Price? (in base currency)'),
+    message: chalk.cyan('Qual o preço de compra? ('+base_currency+')'),
     validate: function(value) {
       var valid = !isNaN(parseFloat(value)) && (value>0)
-      return valid || 'Please enter a number superior than 0'
+      return valid || 'Por favor insira um número superior a 0'
     },
     filter: Number
   }
@@ -222,13 +223,13 @@ ask_fixed_buy_price = (sell_option) => {
     conf.set('nbt.fixed_buy_price', answers.fixed_buy_price)
     fixed_buy_price = parseFloat(answers.fixed_buy_price)
     fixed_buy_price_input[0].default = fixed_buy_price
-    console.log(chalk.grey("The bot will set a buy order at " + fixed_buy_price))
-    if (sell_option.includes("Trailing")) {
-      selling_method = "Trailing"
+    console.log(chalk.grey("O BOT irá configurar uma ordem de compra " + fixed_buy_price))
+    if (sell_option.includes("#4#")) {
+      selling_method = "#4#"
       ask_trailing_percent()
     }
     else {
-      selling_method = "Profit"
+      selling_method = "#5#"
       ask_loss_profit_percents()
     }
   })
@@ -239,10 +240,10 @@ var loss_profit_inputs = [
     type: 'input',
     name: 'loss_pourcent',
     default: loss_pourcent,
-    message: chalk.hex('#FF6347')('Enter the stop loss percentage:'),
+    message: chalk.hex('#FF6347')('Insira a porcentagem de STOP LOSS: '),
     validate: function(value) {
       var valid = !isNaN(parseFloat(value)) && (value>0.10) && (value<100.00)
-      return valid || 'Please enter a number between 0.10 and 99.99'
+      return valid || 'Por favor entre com valor entre 0.10 e  99.99'
     },
     filter: Number
   },
@@ -253,14 +254,14 @@ var loss_profit_inputs = [
     message: chalk.hex('#3CB371')('Enter the profit percentage:'),
     validate: function(value) {
       var valid = !isNaN(parseFloat(value)) && (value>0.10) && (value<100.00)
-      return valid || 'Please enter a number between 0.10 and 99.99'
+      return valid || 'Por favor entre com valor entre 0.10 e  99.99'
     },
     filter: Number
   },
   {
     type: 'confirm',
     name: 'confirm',
-    message: chalk.cyan('Start the trade now?'),
+    message: chalk.cyan('Iniciar a negociação agora?'),
     default: true
   },
 ]
@@ -289,17 +290,17 @@ var trailing_loss_input = [
     type: 'input',
     name: 'trailing_pourcent',
     default: trailing_pourcent,
-    message: chalk.hex('#FF6347')('Enter the Trailing Loss Percentage:'),
+    message: chalk.hex('#FF6347')('Digite a porcentagem de perda: '),
     validate: function(value) {
       var valid = !isNaN(parseFloat(value)) && (value>0.10) && (value<100.00)
-      return valid || 'Please enter a number between 0.10 and 99.99'
+      return valid || 'Por favor entre com valor entre 0.10 e  99.99'
     },
     filter: Number
   },
   {
     type: 'confirm',
     name: 'confirm',
-    message: chalk.cyan('Start the trade now?'),
+    message: chalk.cyan('Iniciar a negociação agora?'),
     default: true
   },
 ]
@@ -322,10 +323,10 @@ ask_trailing_percent = () => {
 
 start_trading = () => {
   var precision = stepSize.toString().split('.')[1].length || 0
-  if (buying_method === "Fixed") {
+  if (buying_method === "#3#") {
     buy_amount = (( ((budget / fixed_buy_price) / parseFloat(stepSize)) | 0 ) * parseFloat(stepSize)).toFixed(precision)
     buy_price = parseFloat(fixed_buy_price)
-    console.log(chalk.grey("BUYING " + buy_amount + " OF " + currency_to_buy + " AT FIXED PRICE ") + chalk.green(buy_price.toFixed(tickSize)))
+    console.log(chalk.grey("Comprando " + buy_amount + " OF " + currency_to_buy + " a preço fixo ") + chalk.green(buy_price.toFixed(tickSize)))
     client.order({
       symbol: pair,
       side: 'BUY',
@@ -343,10 +344,10 @@ start_trading = () => {
       ask_pair_budget()
     })
   }
-  else if (buying_method === "Bid") {
+  else if (buying_method === "#2#") {
     buy_amount = (( ((parseFloat(budget) / (parseFloat(bid_price) * 1.0002)) / parseFloat(stepSize)) | 0 ) * parseFloat(stepSize)).toFixed(precision)
     buy_price = parseFloat(bid_price) * 1.0002
-    console.log(chalk.grey("BUYING " + buy_amount + " OF " + currency_to_buy + " AT JUST ABOVE 1ST BID PRICE ") + chalk.green(buy_price.toFixed(tickSize)))
+    console.log(chalk.grey("Comprando " + buy_amount + " OF " + currency_to_buy + " um pouco acima do preço de compra ") + chalk.green(buy_price.toFixed(tickSize)))
     client.order({
       symbol: pair,
       side: 'BUY',
@@ -364,10 +365,10 @@ start_trading = () => {
       ask_pair_budget()
     })
   }
-  else if (buying_method === "Market") {
+  else if (buying_method === "#1#") {
     buy_amount = (( ((parseFloat(budget) / (parseFloat(ask_price) * 1.0002)) / parseFloat(stepSize)) | 0 ) * parseFloat(stepSize)).toFixed(precision)
     buy_price = parseFloat(ask_price)
-    console.log(chalk.green("BUYING " + buy_amount + " OF " + currency_to_buy + " AT MARKET PRICE" ))
+    console.log(chalk.green("Comprando " + buy_amount + " OF " + currency_to_buy + " a preço de mercado " ))
     client.order({
       symbol: pair,
       side: 'BUY',
@@ -394,7 +395,7 @@ auto_trade = () => {
   // LISTEN TO KEYBOARD PRSEED KEYS
   process.stdin.resume()
   process.stdin.setRawMode(true)
-  console.log(chalk.grey(" ⚠️  Press [ CTRL + c ] or q to cancel the trade and sell everything at market price. ⚠️ "))
+  console.log(chalk.grey(" ⚠️  Pressione [ CTRL + c ] ou q para cancelar a negociação ou vender todas as moedas no preço de mercado. ⚠️ "))
   console.log(" ")
   const curr_trade = trade_count
   const clean_trades = client.ws.trades([pair], trade => {
@@ -409,9 +410,9 @@ auto_trade = () => {
     }
 
     // SWITCH PRICE REACHED SETTING UP SELL FOR PROFIT ORDER
-    if ( (selling_method === "Profit") && order_id && (step === 3) && (trade.price > switch_price) ) {
+    if ( (selling_method === "#5#") && order_id && (step === 3) && (trade.price > switch_price) ) {
       step = 99
-      console.log(chalk.grey(" CANCEL STOP LOSS AND GO FOR PROFIT "))
+      console.log(chalk.grey(" Cancelar o STOP LOSS e ir para o lucro "))
       client.cancelOrder({
         symbol: pair,
         orderId: order_id,
@@ -428,25 +429,25 @@ auto_trade = () => {
         .then((order) => {
           step = 5
           order_id = order.orderId
-          var log_report = chalk.grey(" SELL ORDER READY ")
+          var log_report = chalk.grey(" Ordem de venda está pronta ! ")
           console.log(log_report)
         })
         .catch((error) => {
-          var log_report = chalk.magenta(" ERROR #555 ")
+          var log_report = chalk.magenta(" Erro #555 ")
           console.error(log_report + error)
         })
       })
       .catch((error) => {
-        console.log(" ERROR #547 ")
+        console.log(" Erro #547 ")
         console.error(error)
       })
     }
 
     // INCREASE THE TRAILING STOP LOSS PRICE
-    if ( (selling_method === "Trailing") && order_id && (step === 3) && (trade.price > switch_price) ) {
+    if ( (selling_method === "#4#") && order_id && (step === 3) && (trade.price > switch_price) ) {
       step = 99
       tot_cancel = tot_cancel + 1
-      console.log(chalk.grey(" CANCEL CURRENT STOP LOSS "))
+      console.log(chalk.grey(" Cancelar STOP LOSS atual "))
       client.cancelOrder({
         symbol: pair,
         orderId: order_id,
@@ -457,19 +458,19 @@ auto_trade = () => {
         loss_price = (parseFloat(stop_price) - (parseFloat(stop_price) * 0.001)).toFixed(tickSize)
         set_stop_loss_order()
         switch_price = (parseFloat(switch_price) + (parseFloat(switch_price) * trailing_pourcent / 100.00)).toFixed(tickSize)
-        console.log(chalk.grey(" NEW TRAILING STOP LOSS SET @ " + stop_price))
+        console.log(chalk.grey(" Novo STOP LOSS movél configurado @ " + stop_price))
         step = 3
       })
       .catch((error) => {
-        console.log(" ERROR #547 ")
+        console.log(" Erro #547 ")
         console.error(error)
       })
     }
 
     // PRICE BELLOW BUY PRICE SETTING UP STOP LOSS ORDER
-    if ( (selling_method==='Profit') && order_id && (step === 5) && (trade.price < buy_price) ) {
+    if ( (selling_method==='#5#') && order_id && (step === 5) && (trade.price < buy_price) ) {
       step = 99
-      console.log(chalk.grey(" CANCEL PROFIT SETTING UP STOP LOSS "))
+      console.log(chalk.grey(" Cancele a configuração de lucro. Configure o STOP LOSS "))
       tot_cancel = tot_cancel + 1
       client.cancelOrder({
         symbol: pair,
@@ -481,7 +482,7 @@ auto_trade = () => {
       })
       .catch((error) => {
         pnl = 100.00*(buy_price - trade.price)/buy_price
-        var log_report = chalk.magenta(" LOSS PRICE REACHED THE BOT SHOULD HAVE SOLD EVERYTHING #454 ")
+        var log_report = chalk.magenta(" Preço de perda alcançado. o bot deve vender tudo #454 ")
         report.fail(add_status_to_trade_report(trade, log_report))
         reset_trade()
         setTimeout( () => { ask_pair_budget(), 1000 } )
@@ -489,7 +490,7 @@ auto_trade = () => {
     }
 
     // CURRENT PRICE REACHED SELL PRICE
-    if ( (selling_method === "Profit") && order_id && (step === 5) && (trade.price >= sell_price) ) {
+    if ( (selling_method === "#5#") && order_id && (step === 5) && (trade.price >= sell_price) ) {
       step = 99
       client.getOrder({
         symbol: pair,
@@ -498,14 +499,14 @@ auto_trade = () => {
       })
       .then( (order_result) => {
         if ( parseFloat(order_result.executedQty) < parseFloat(order_result.origQty) ) {
-          var log_report = chalk.grey(" PROFIT PRICE REACHED BUT NOT ALL EXECUTED " + order_result.executedQty )
+          var log_report = chalk.grey(" Preço de lucro alcançado, mas não todo executado " + order_result.executedQty )
           report.text = add_status_to_trade_report(trade, log_report)
           step = 5
         }
         else {
           clean_trades()
           pnl = 100.00*(trade.price - buy_price)/buy_price
-          var log_report = chalk.greenBright(" 🐬 !!! WE HAVE A WINNER !!! 🐬 ")
+          var log_report = chalk.greenBright(" 🐬 !!! Nos temos um ganho !!! 🐬 ")
           report.text = add_status_to_trade_report(trade, log_report)
           reset_trade()
           report.succeed()
@@ -513,7 +514,7 @@ auto_trade = () => {
         }
       })
       .catch((error) => {
-        console.error(" ERROR 8 " + error)
+        console.error(" Erro 8 " + error)
       })
     }
 
@@ -527,14 +528,14 @@ auto_trade = () => {
       })
       .then( (order_result) => {
         if ( parseFloat(order_result.executedQty) < parseFloat(order_result.origQty) ) {
-          var log_report = chalk.grey(" STOP PRICE REACHED BUT NOT ALL EXECUTED " + order_result.executedQty )
+          var log_report = chalk.grey(" Preço de STOP alcançado, mas não totalmente executado " + order_result.executedQty )
           report.text = add_status_to_trade_report(trade, log_report)
           step = 5
         }
         else {
           clean_trades()
           pnl = 100.00*(buy_price - trade.price)/buy_price
-          var log_report = chalk.magenta(" STOP LOSS ALL EXECUTED")
+          var log_report = chalk.magenta(" STOP LOSS todo executado ")
           report.text = add_status_to_trade_report(trade, log_report)
           reset_trade()
           report.succeed()
@@ -545,7 +546,7 @@ auto_trade = () => {
         console.error(" API ERROR #9 " + error)
         clean_trades()
         pnl = 100.00*(buy_price - trade.price)/buy_price
-        var log_report = chalk.magenta(" TRADE STOPPED ")
+        var log_report = chalk.magenta(" Negociação parado ")
         report.text = add_status_to_trade_report(trade, log_report)
         reset_trade()
         report.fail()
@@ -556,7 +557,7 @@ auto_trade = () => {
 }
 
 sell_at_market_price = () => {
-  console.log(chalk.keyword('orange')(" SELLING AT MARKET PRICE "))
+  console.log(chalk.keyword('orange')(" Vendendo no preço de mercado "))
   client.order({
     symbol: pair,
     side: 'SELL',
@@ -566,7 +567,7 @@ sell_at_market_price = () => {
   })
   .then( order => {
     reset_trade()
-    report.succeed( chalk.magenta(" THE BOT SOLD AT MARKET PRICE #777 ") )
+    report.succeed( chalk.magenta(" O BOT vendeu no preço de mercado #777 ") )
     setTimeout( () => { ask_pair_budget(), 2500 } )
   })
   .catch( error => {
@@ -582,11 +583,11 @@ checkBuyOrderStatus = () => {
       init_buy_filled = true
       console.log(order)
       buy_amount = parseFloat(order.executedQty)
-      console.log(chalk.white(" INITAL BUY ORDER FULLY EXECUTED "))
+      console.log(chalk.white(" Ordem de compra inicial completamente executada "))
       client.myTrades({ symbol: pair, limit: 1, recvWindow: 1000000 }).then( mytrade => {
         buy_price = parseFloat(mytrade[0].price)
-        console.log(chalk.gray(" FINAL BUY PRICE @ ") + chalk.cyan(buy_price))
-        if (selling_method==="Trailing") {
+        console.log(chalk.gray(" Preço de compra final @ ") + chalk.cyan(buy_price))
+        if (selling_method==="#4#") {
           stop_price = (buy_price - (buy_price * trailing_pourcent / 100.00)).toFixed(tickSize)
           loss_price = (stop_price - (stop_price * 0.001)).toFixed(tickSize)
           set_stop_loss_order()
@@ -602,7 +603,7 @@ checkBuyOrderStatus = () => {
       })
     }
     else {
-      console.log(chalk.gray(" BUY ORDER NOT YET FULLY EXECUTED "))
+      console.log(chalk.gray(" Ordem de compra ainda não executada "))
       init_buy_filled = false
       step = 1
     }
@@ -621,14 +622,14 @@ set_stop_loss_order = () => {
   })
   .then((order) => {
     order_id = order.orderId
-    var log_report = chalk.grey(" STOP LOSS READY (" + tot_cancel + ") @ ") + chalk.cyan(stop_price)
+    var log_report = chalk.grey(" STOP LOSS pronto (" + tot_cancel + ") @ ") + chalk.cyan(stop_price)
     console.log(log_report)
     step = 3
   })
   .catch((error) => {
-    console.error(" ERRROR #1233 STOP PRICE (" + stop_price + ") " + error )
+    console.error(" Erro #1233 STOP preço (" + stop_price + ") " + error )
     if (String(error).includes("MIN_NOTIONAL")) {
-      console.error("⚠️  PLEASE MAKE SURE YOUR BUDGET VALUE IS SUPERIOR THAN 15 USD ⚠️")
+      console.error("⚠️ Por favor, certifique-se que seu orçamento é maior que 15,00 USD ⚠️")
     }
     sell_at_market_price()
   })
@@ -668,14 +669,14 @@ process.stdin.on('keypress', ( key ) => {
   if ( (key === '\u0003') || (key === 'q') ) {
     if (order_id) {
       trade_count = trade_count + 1
-      console.log(" --- STOPPING THE TRADE ---  ")
+      console.log(" --- Parando a negociação ---  ")
       client.cancelOrder({
         symbol: pair,
         orderId: order_id,
         recvWindow: 1000000,
       })
       .then( (order) => {
-        console.log(" CURRENT ORDER CANCELED ")
+        console.log(" Ordem atual cancelada ")
         client.getOrder({
           symbol: pair,
           orderId: order_id,
@@ -683,11 +684,11 @@ process.stdin.on('keypress', ( key ) => {
         })
         .then( (order_result) => {
           if (order_result.status === "FILLED") {
-            console.log("PREV ORDER FILLED")
+            console.log(" Ordem anterior executada ")
             sell_at_market_price()
           }
           else if (order_result.status === "PARTIALLY_FILLED") {
-            console.log("PREV ORDER PARTIALLY_FILLED")
+            console.log(" Ordem anterior parcialmente executada ")
             if (order_result.side === "BUY") {
               buy_amount = parseFloat(order_result.executedQty)
               sell_at_market_price()
@@ -704,18 +705,18 @@ process.stdin.on('keypress', ( key ) => {
             else {
               sell_at_market_price()
               reset_trade()
-              report.succeed( chalk.magenta(" THE BOT STOPPED THE TRADE #3365 ") )
+              report.succeed( chalk.magenta(" O BOT parou a negociação #3365 ") )
               setTimeout( () => { ask_pair_budget(), 2500 } )
             }
           }
         })
         .catch((error) => {
-          console.error(" GET FINAL ORDER ERROR : " + error)
+          console.error(" Erro da ordem final : " + error)
           sell_at_market_price()
         })
       })
       .catch((error) => {
-        console.error(" FINAL CANCEL ERROR : " + error)
+        console.error(" Erro de cancelamento : " + error)
         sell_at_market_price()
       })
     }
@@ -726,23 +727,23 @@ process.stdin.on('keypress', ( key ) => {
 var options_menu = [
   new inquirer.Separator(),
   {
-    name: 'See your orders',
+    name: '#1# - Veja suas ordens',
     value: {
       name: 'see_order',
       method: () => {
-        console.log('not implement')
+        console.log(' Não implementado')
       }
     }
   },
   {
-    name: 'Create trade',
+    name: '#2# - Criar negociação',
     value: {
       name: 'create_trade',
       method: ask_pair_budget
     }
   },
   {
-    name:'See info about your trades',
+    name:'#3# - Ver informação das suas negociações',
     value: {
       name: 'see_trades',
       method: () => {
@@ -751,7 +752,7 @@ var options_menu = [
     }
   },
   {
-    name:'See info about a specific coin',
+    name:'#4# - Ver informação sobre uma moeda',
     value: {
       name: 'see_info_coin',
       method: () => {
@@ -766,7 +767,7 @@ var menu_request = [
   {
     type: 'list',
     name: 'menu_option',
-    message: chalk.cyan('What you would like to Do ?'),
+    message: chalk.cyan('O que você gostaria de fazer ?'),
     choices: options_menu,
   },
 ]
