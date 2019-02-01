@@ -454,7 +454,7 @@ auto_trade = () => {
       })
       .then(() => {
         stop_price = (parseFloat(stop_price) + (parseFloat(stop_price) * trailing_pourcent / 100.00)).toFixed(tickSize)
-        loss_price = (parseFloat(stop_price) - (parseFloat(stop_price) * 0.040)).toFixed(tickSize)
+        loss_price = (parseFloat(stop_price) - (parseFloat(stop_price) * 0.001)).toFixed(tickSize)
         set_stop_loss_order()
         switch_price = (parseFloat(switch_price) + (parseFloat(switch_price) * trailing_pourcent / 100.00)).toFixed(tickSize)
         console.log(chalk.grey(" NEW TRAILING STOP LOSS SET @ " + stop_price))
@@ -580,6 +580,7 @@ checkBuyOrderStatus = () => {
   .then( order => {
     if (order.status === "FILLED") {
       init_buy_filled = true
+      console.log(order)
       buy_amount = parseFloat(order.executedQty)
       console.log(chalk.white(" INITAL BUY ORDER FULLY EXECUTED "))
       client.myTrades({ symbol: pair, limit: 1, recvWindow: 1000000 }).then( mytrade => {
@@ -587,13 +588,13 @@ checkBuyOrderStatus = () => {
         console.log(chalk.gray(" FINAL BUY PRICE @ ") + chalk.cyan(buy_price))
         if (selling_method==="Trailing") {
           stop_price = (buy_price - (buy_price * trailing_pourcent / 100.00)).toFixed(tickSize)
-          loss_price = (stop_price - (stop_price * 0.040)).toFixed(tickSize)
+          loss_price = (stop_price - (stop_price * 0.001)).toFixed(tickSize)
           set_stop_loss_order()
           switch_price = (buy_price + (buy_price * trailing_pourcent / 100.00)).toFixed(tickSize)
         }
         else {
           stop_price = (buy_price - (buy_price * loss_pourcent / 100.00)).toFixed(tickSize)
-          loss_price = (stop_price - (stop_price * 0.040)).toFixed(tickSize)
+          loss_price = (stop_price - (stop_price * 0.001)).toFixed(tickSize)
           set_stop_loss_order()
           switch_price = (buy_price + (buy_price * profit_pourcent / 200.00)).toFixed(tickSize)
           sell_price = (buy_price + (buy_price * profit_pourcent / 100.00)).toFixed(tickSize)
