@@ -6,7 +6,7 @@
  * ============================================================
  * Copyright 2018, Herve Fulchiron - herve76@gmail.com
  * Released under the MIT License
- * v0.0.7 - 🐬 delphines 🐬
+ * v0.0.7 - $$ delphines $$
  * 10/14/2018
  * ============================================================ */
 
@@ -74,9 +74,9 @@ clear()
 
 console.log(chalk.green(figlet.textSync('_H_P_', { horizontalLayout: 'fitted' })))
 console.log(' ')
-console.log(" 🐬 ".padEnd(10) + '                   ' + " 🐬 ".padStart(11))
-console.log(" 🐬 ".padEnd(10) + chalk.bold.underline.cyan('Hipnos - Binance Trader') + " 🐬 ".padStart(11))
-console.log(" 🐬 ".padEnd(10) + '                   ' + " 🐬 ".padStart(11))
+console.log(" $$ ".padEnd(10) + '                   ' + " $$ ".padStart(11))
+console.log(" $$ ".padEnd(10) + chalk.bold.underline.cyan('Hipnos - Binance Trader') + " $$ ".padStart(11))
+console.log(" $$ ".padEnd(10) + '                   ' + " $$ ".padStart(11))
 console.log(' ')
 console.log(' ')
 
@@ -164,7 +164,7 @@ var buy_sell_options = [
     type: 'list',
     name: 'sell_option',
     message: chalk.cyan('Como você gostaria de vender: '),
-    choices: ['#4# - Configurar Stop Loss', '#5# - Configurar Stop Loss e Ganho Porcentagem'],
+    choices: ['#4# - Configurar Stop Loss movél', '#5# - Configurar Stop Loss e Ganho Porcentagem'],
     //choices: ['Set a Trailing Stop Loss', 'Set Stop Loss and Profit Percentages'],
   },
 ]
@@ -326,7 +326,7 @@ start_trading = () => {
   if (buying_method === "#3#") {
     buy_amount = (( ((budget / fixed_buy_price) / parseFloat(stepSize)) | 0 ) * parseFloat(stepSize)).toFixed(precision)
     buy_price = parseFloat(fixed_buy_price)
-    console.log(chalk.grey("Comprando " + buy_amount + " OF " + currency_to_buy + " a preço fixo ") + chalk.green(buy_price.toFixed(tickSize)))
+    console.log(chalk.grey("Comprando " + buy_amount + " de " + currency_to_buy + " a preço fixo ") + chalk.green(buy_price.toFixed(tickSize)))
     client.order({
       symbol: pair,
       side: 'BUY',
@@ -347,7 +347,7 @@ start_trading = () => {
   else if (buying_method === "#2#") {
     buy_amount = (( ((parseFloat(budget) / (parseFloat(bid_price) * 1.0002)) / parseFloat(stepSize)) | 0 ) * parseFloat(stepSize)).toFixed(precision)
     buy_price = parseFloat(bid_price) * 1.0002
-    console.log(chalk.grey("Comprando " + buy_amount + " OF " + currency_to_buy + " um pouco acima do preço de compra ") + chalk.green(buy_price.toFixed(tickSize)))
+    console.log(chalk.grey("Comprando quantidade de " + buy_amount + " de " + currency_to_buy + " um pouco acima do preço de compra ") + chalk.green(buy_price.toFixed(tickSize)))
     client.order({
       symbol: pair,
       side: 'BUY',
@@ -368,7 +368,7 @@ start_trading = () => {
   else if (buying_method === "#1#") {
     buy_amount = (( ((parseFloat(budget) / (parseFloat(ask_price) * 1.0002)) / parseFloat(stepSize)) | 0 ) * parseFloat(stepSize)).toFixed(precision)
     buy_price = parseFloat(ask_price)
-    console.log(chalk.green("Comprando " + buy_amount + " OF " + currency_to_buy + " a preço de mercado " ))
+    console.log(chalk.green("Comprando quantidade " + buy_amount + " de " + currency_to_buy + " a preço de mercado " ))
     client.order({
       symbol: pair,
       side: 'BUY',
